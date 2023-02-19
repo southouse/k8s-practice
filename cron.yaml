@@ -1,0 +1,44 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cleanup-pod
+  labels:
+    app: practice
+spec:
+  schedule: "*/1 * * * *"
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    metadata:
+      name: cleanup-pod
+      labels:
+        app: practice
+    spec:
+      template:
+        metadata:
+          labels:
+            app: practice
+        spec:
+          serviceAccountName: sa-cleanup-pods
+          containers:
+            - image: bitnami/kubectl:latest
+              name: cleanup-pod
+              command:
+                - /bin/sh
+                - -c
+                - /configmap/cleanup.sh >> /data/cleanup.log
+              volumeMounts:
+                - name: host-vol
+                  mountPath: /data
+                - name: configmap
+                  mountPath: /configmap
+          volumes:
+            - name: host-vol
+              hostPath:
+                path: /data
+                type: DirectoryOrCreate
+            - name: configmap
+              configMap:
+                name: cleanup-script
+                defaultMode: 0777
+          restartPolicy: Never

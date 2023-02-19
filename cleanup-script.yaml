@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cleanup-script
+  labels:
+    app: practice
+data:
+  cleanup.sh: |
+    #!/bin/bash
+    NOW=`date`
+
+    result=$(kubectl get pods | grep Evicted)
+
+    if [ $? -eq 0 ]; then
+      echo "$NOW [INFO] Execute cleanup-script for Pod"
+      kubectl get pods | grep Evicted | awk '{print $1}' | xargs kubectl delete pods -n default &>> /data/delete.log
+    else
+      echo "$NOW [INFO] Not found Evicted pod"
+    fi

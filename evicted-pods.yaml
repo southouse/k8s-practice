@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: evicted-pod
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: evicted
+      tier: app
+  template:
+    metadata:
+      labels:
+        app: evicted
+        tier: app
+    spec:
+      priorityClassName: my-priority
+      containers:
+        - name: nginx
+          image: nginx:latest
+          resources:
+            limits:
+              cpu: "1"
+              memory: 400Mi
+            requests:
+              cpu: 10m
+              memory: 1Mi

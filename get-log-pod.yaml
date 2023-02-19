@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: logger
+  labels:
+    app: practice
+spec:
+  containers:
+    - name: amazonlinux
+      image: amazonlinux:latest
+      command: [ "/bin/bash", "-c", "--" ]
+      args: [ "while true; do sleep 30; done;" ]
+      volumeMounts:
+        - name: host-vol
+          mountPath: /data
+  volumes:
+    - name: host-vol
+      hostPath:
+        path: /data
+        type: DirectoryOrCreate

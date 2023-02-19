@@ -1,0 +1,26 @@
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: cleanup-pods
+rules:
+- apiGroups: [""] 
+  resources: ["pods"]
+  verbs: ["delete", "deletecollection", "get", "list", "watch"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: cleanup-pods
+subjects:
+- kind: ServiceAccount
+  name: sa-cleanup-pods
+roleRef:
+  kind: Role
+  name: cleanup-pods
+  apiGroup: ""
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: sa-cleanup-pods
+---
